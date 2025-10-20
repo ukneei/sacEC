@@ -1,0 +1,65 @@
+//code for traffic light with sensor
+
+const int trigPin = 12;
+const int echoPin = 2;
+const int redLED = 9;
+const int yellowLED = 8;
+const int greenLED = 7;
+
+long duration;
+int distance;
+
+void setup() {
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  pinMode(redLED, OUTPUT);
+  pinMode(yellowLED, OUTPUT);
+  pinMode(greenLED, OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  // GREEN phase
+  digitalWrite(redLED, LOW);
+  digitalWrite(yellowLED, LOW);
+  digitalWrite(greenLED, HIGH);
+  delay(5000); // green for 5 seconds
+
+  // YELLOW phase
+  digitalWrite(greenLED, LOW);
+  digitalWrite(yellowLED, HIGH);
+  delay(2000); // yellow for 2 seconds
+
+  // RED phase
+  digitalWrite(yellowLED, LOW);
+  digitalWrite(redLED, HIGH);
+
+  // Check for car during red
+  bool carDetected = false;
+  for (int i = 0; i < 10; i++) {
+    digitalWrite(trigPin, LOW);
+    delayMicroseconds(2);
+    digitalWrite(trigPin, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(trigPin, LOW);
+
+    duration = pulseIn(echoPin, HIGH);
+    distance = duration * 0.034 / 2;
+
+    Serial.print("Distance: ");
+    Serial.println(distance);
+
+    if (distance < 20) { // Car within 20 cm
+      carDetected = true;
+      break;
+    }
+    delay(500); // check every half second
+  }
+
+  if (carDetected) {
+    Serial.println("Car detected! Switching to green.");
+    delay(500); // brief pause before switching
+  } else {
+    delay(5000); // normal red duration
+  }
+}
