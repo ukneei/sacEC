@@ -58,7 +58,7 @@ void loop() {
 
   if (carDetected) {
     Serial.println("Car detected! Switching to green.");
-    delay(500); // brief pause before switching
+    delay(200); // brief pause before switching
   } else {
     delay(5000); // normal red duration
   }
