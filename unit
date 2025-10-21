@@ -1,14 +1,18 @@
 //code for traffic light with sensor
 
+//the pins for the hardware
 const int trigPin = 12;
 const int echoPin = 2;
 const int redLED = 9;
 const int yellowLED = 8;
 const int greenLED = 7;
 
+//other variables
 long duration;
 int distance;
 
+//only happens once
+//sets the pins/input/output 
 void setup() {
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
@@ -18,24 +22,26 @@ void setup() {
   Serial.begin(9600);
 }
 
+//will continue so long there is power
 void loop() {
   // GREEN phase
-  digitalWrite(redLED, LOW);
-  digitalWrite(yellowLED, LOW);
-  digitalWrite(greenLED, HIGH);
-  delay(5000); // green for 5 seconds
+  digitalWrite(redLED, LOW); //make red off
+  digitalWrite(yellowLED, LOW); //make yellow off
+  digitalWrite(greenLED, HIGH); //turn green on
+  delay(4000); // green for 4 seconds
 
   // YELLOW phase
-  digitalWrite(greenLED, LOW);
-  digitalWrite(yellowLED, HIGH);
+  digitalWrite(greenLED, LOW); //turn green off
+  digitalWrite(yellowLED, HIGH); //turn yellow on
   delay(2000); // yellow for 2 seconds
 
   // RED phase
-  digitalWrite(yellowLED, LOW);
-  digitalWrite(redLED, HIGH);
+  digitalWrite(yellowLED, LOW); // turn yellow off
+  digitalWrite(redLED, HIGH); //turn red on. timing for this is below
+  
 
   // Check for car during red
-  bool carDetected = false;
+  bool carDetected = false; //initialize with no car
   for (int i = 0; i < 10; i++) {
     digitalWrite(trigPin, LOW);
     delayMicroseconds(2);
@@ -44,22 +50,22 @@ void loop() {
     digitalWrite(trigPin, LOW);
 
     duration = pulseIn(echoPin, HIGH);
-    distance = duration * 0.034 / 2;
+    distance = duration * 0.034 / 2; //math for distance if we decide to incorperate a display
 
     Serial.print("Distance: ");
     Serial.println(distance);
 
     if (distance < 20) { // Car within 20 cm
-      carDetected = true;
+      carDetected = true; //if theres a car turn to true
       break;
     }
-    delay(500); // check every half second
+    delay(100); // check every tenth second
   }
 
-  if (carDetected) {
+  if (carDetected) { //if theres a car
     Serial.println("Car detected! Switching to green.");
-    delay(200); // brief pause before switching
+    delay(200); // brief pause before switching to red
   } else {
-    delay(5000); // normal red duration
+    delay(3000); // normal red duration (3 seconds)
   }
 }
